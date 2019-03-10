@@ -1,1 +1,1 @@
-https://github.com/mstachniuk/shipkit-workshop
+https://github.com/magx2/shipkit-workshop-2
