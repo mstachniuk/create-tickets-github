@@ -19,22 +19,19 @@ def createTicket(url, token, title, description):
         print response.text
 
 def createTickets(repo, token):
-    begin = len("https://github.com/")
-    ownerRepo = repo[begin:]
-    print 'found ' + ownerRepo
-    url = 'https://api.github.com/repos/' + ownerRepo + '/issues'
+    url = 'https://api.github.com/repos/' + repo + '/issues'
     createTicket(url, token, "Add long point support", "Please add a support for long isTriangle.")
     createTicket(url, token, "Add float support", "Please add a support for float isTriangle.")
     createTicket(url, token, "Add BigInteger support", "Please add a support for BigInteger isTriangle.")
     createTicket(url, token, "Add BigDecimal point support", "Please add a support for BigDecimal isTriangle.")
-    # createTicket(url, token, "Unit tests for MathUtils are missing", "Please add unit tests for MathUtils.")
+    createTicket(url, token, "Unit tests for MathUtils are missing", "Please add unit tests for MathUtils.")
     createTicket(url, token, "Readme file is missing", "Please add a Readme file with project description.")
     createTicket(url, token, "Javadoc for MathUtils class is missing", "Please add Javadoc for MathUtils class.")
     
 def cloneRepo(repo):
-    rmtree('/tmp/shipkit-w')
     os.chdir('/tmp')
-    subprocess.check_output('git clone ' + repo + ' shipkit-w', shell=True)
+    rmtree('/tmp/shipkit-w', ignore_errors=True)
+    subprocess.check_output('git clone git@github.com:' + repo + '.git shipkit-w', shell=True)
     os.chdir('/tmp/shipkit-w')
 
 def changeGitEmail():
@@ -68,10 +65,8 @@ def addBigIntegerSupport(repo, scriptDir):
     subprocess.check_output('git commit -m "Add BigInteger support"', shell=True)
     subprocess.check_output('git push --set-upstream origin big-integer-support', shell=True)
 
-def createThings(repo, token):
+def createThings(repo, token, scriptDir):
     createTickets(repo, token)
-    scriptDir = os.getcwd()
-    print 'script dir: ' + scriptDir
     cloneRepo(repo)
     changeGitEmail()
     addLongSupport(repo, scriptDir)
@@ -86,13 +81,16 @@ if __name__ == "__main__":
     else:
         print "Please set GITHUB_WRITE_TOKEN env variable"
         sys.exit()
-    
+
+    scriptDir = os.getcwd()
+    print 'script dir: ' + scriptDir
+
     with open('repos.txt') as f:
         repos = f.readlines()
         repos = [x.strip() for x in repos] 
 
         for repo in repos:
             print repo
-            createThings(repo, token)
+            createThings(repo, token, scriptDir)
             
             
